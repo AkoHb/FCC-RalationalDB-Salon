@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.9 (Ubuntu 12.9-2.pgdg20.04+1)
--- Dumped by pg_dump version 12.9 (Ubuntu 12.9-2.pgdg20.04+1)
+-- Dumped from database version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
+-- Dumped by pg_dump version 12.17 (Ubuntu 12.17-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -49,9 +49,9 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.appointments (
     appointment_id integer NOT NULL,
-    "time" character varying(50),
     service_id integer,
-    customer_id integer
+    customer_id integer,
+    "time" character varying(50)
 );
 
 
@@ -85,8 +85,8 @@ ALTER SEQUENCE public.appointments_appointment_id_seq OWNED BY public.appointmen
 
 CREATE TABLE public.customers (
     customer_id integer NOT NULL,
-    phone character varying(50),
-    name character varying(50)
+    name character varying(50),
+    phone character varying(50)
 );
 
 
@@ -122,8 +122,7 @@ CREATE TABLE public.services (
     service_id integer NOT NULL,
     name character varying(50),
     service_time_min integer NOT NULL,
-    craftsmens_count integer NOT NULL,
-    work_time character varying(50) NOT NULL DEFAULT("9:00-16:00 Mon-Fr, 13:00-13:30 Lunch")
+    craftsmens_count integer NOT NULL
 );
 
 
@@ -176,67 +175,57 @@ ALTER TABLE ONLY public.services ALTER COLUMN service_id SET DEFAULT nextval('pu
 -- Data for Name: appointments; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.appointments VALUES (75, '', 1, 10);
-INSERT INTO public.appointments VALUES (5, '', 1, 10);
-INSERT INTO public.appointments VALUES (12, '', 1, 10);
-INSERT INTO public.appointments VALUES (82, '', 1, 10);
-INSERT INTO public.appointments VALUES (87, '10pm', 3, 6);
-INSERT INTO public.appointments VALUES (19, '', 1, 10);
-INSERT INTO public.appointments VALUES (24, '4pm', 1, 5);
-INSERT INTO public.appointments VALUES (27, '', 1, 10);
-INSERT INTO public.appointments VALUES (32, '3pm', 3, 4);
-INSERT INTO public.appointments VALUES (35, '', 1, 10);
-INSERT INTO public.appointments VALUES (42, '', 1, 10);
-INSERT INTO public.appointments VALUES (49, '', 1, 10);
-INSERT INTO public.appointments VALUES (56, '', 1, 10);
-INSERT INTO public.appointments VALUES (61, '6pm', 1, 5);
-INSERT INTO public.appointments VALUES (67, '', 1, 10);
+INSERT INTO public.appointments VALUES (14, 1, 11, '12asd');
+INSERT INTO public.appointments VALUES (15, 1, 11, '10as');
+INSERT INTO public.appointments VALUES (16, 1, 11, '10as');
+INSERT INTO public.appointments VALUES (17, 1, 11, '1sa');
+INSERT INTO public.appointments VALUES (18, 1, 11, '10asd');
+INSERT INTO public.appointments VALUES (19, 1, 11, 'Test');
+INSERT INTO public.appointments VALUES (20, 1, 11, 'Test');
+INSERT INTO public.appointments VALUES (21, 1, 11, 'Test');
+INSERT INTO public.appointments VALUES (22, 1, 11, 'Test');
+INSERT INTO public.appointments VALUES (24, 1, 11, 'Test');
 
 
 --
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.customers VALUES (2, '111-1111', 'Landon');
-INSERT INTO public.customers VALUES (3, '222-2222', 'george');
-INSERT INTO public.customers VALUES (4, '333-3333', 'yeet');
-INSERT INTO public.customers VALUES (5, '444-4444', 'Tyler');
-INSERT INTO public.customers VALUES (6, '666-6666', 'Hick');
-INSERT INTO public.customers VALUES (7, '999-9999', 'Fred');
-INSERT INTO public.customers VALUES (10, '', '');
-INSERT INTO public.customers VALUES (24, '888-8888', 'Jim');
+INSERT INTO public.customers VALUES (1, '1', '1');
+INSERT INTO public.customers VALUES (2, 'Ajdsnf', '555-555');
+INSERT INTO public.customers VALUES (11, 'Afdjfs', '');
 
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.services VALUES ('Inspection', 60, 6);
-INSERT INTO public.services VALUES ('Repair', 25, 4);
-INSERT INTO public.services VALUES ('Fix', 90, 5);
-INSERT INTO public.services VALUES ('Mount', 120, 2);
-INSERT INTO public.services VALUES ('Unmount', 100, 3);
+INSERT INTO public.services VALUES (1, 'Inspection', 60, 6);
+INSERT INTO public.services VALUES (2, 'Repair', 25, 4);
+INSERT INTO public.services VALUES (3, 'Fix', 90, 5);
+INSERT INTO public.services VALUES (4, 'Mount', 120, 2);
+INSERT INTO public.services VALUES (5, 'Unmount', 100, 3);
 
 
 --
 -- Name: appointments_appointment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.appointments_appointment_id_seq', 87, true);
+SELECT pg_catalog.setval('public.appointments_appointment_id_seq', 30, true);
 
 
 --
 -- Name: customers_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.customers_customer_id_seq', 82, true);
+SELECT pg_catalog.setval('public.customers_customer_id_seq', 16, true);
 
 
 --
 -- Name: services_service_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.services_service_id_seq', 3, true);
+SELECT pg_catalog.setval('public.services_service_id_seq', 1, false);
 
 
 --
@@ -272,21 +261,22 @@ ALTER TABLE ONLY public.services
 
 
 --
--- Name: appointments appointment_customer; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+-- Name: appointments customers; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.appointments
-    ADD CONSTRAINT appointment_customer FOREIGN KEY (customer_id) REFERENCES public.customers(customer_id);
+    ADD CONSTRAINT customers FOREIGN KEY (customer_id) REFERENCES public.customers(customer_id);
 
 
 --
--- Name: appointments appointment_service; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+-- Name: appointments services; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.appointments
-    ADD CONSTRAINT appointment_service FOREIGN KEY (service_id) REFERENCES public.services(service_id);
+    ADD CONSTRAINT services FOREIGN KEY (service_id) REFERENCES public.services(service_id);
 
 
 --
 -- PostgreSQL database dump complete
 --
+
