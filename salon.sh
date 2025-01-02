@@ -1,19 +1,21 @@
 #! /bin/bash
 
-PSQL="psql --username=freecodecamp --dbname=salon -t --no-align -c"
+PSQL="psql -X --username=freecodecamp --dbname=salon --tuples-only -c"
 
 echo -e "\n~~~~~ MY SALON ~~~~~"
 
 echo -e "\nWelcome to My Salon, how can I help you?\n"
 
 #declare global variables
-CUSTOMER_NAME = ""
-CUSTOMER_PHONE = ""
-SERVICES = $($PSQL "SELECT service_id, name FROM services")
-SERVICE_ID_SELECTED = 0
-SERVICE_TIME = ""
-SERVICE_NAME_FORMATTED = ""
-CUSTOMER_NAME_FORMATTED = ""
+CUSTOMER_ID=0
+CUSTOMER_NAME=""
+CUSTOMER_NAME_FORMATTED=""
+CUSTOMER_PHONE=""
+SERVICES=$($PSQL "SELECT service_id, name FROM services")
+SERVICE_ID_SELECTED=0
+SERVICE_NAME=""
+SERVICE_TIME=""
+SERVICE_NAME_FORMATTED=""
 
 
 # Next create some functions to processing data
@@ -21,7 +23,7 @@ FORMAT_NAMES () {
 
     SERVICE_NAME_FORMATTED=$(echo $SERVICE_NAME | sed 's/\s//g' -E)
     CUSTOMER_NAME_FORMATTED=$(echo $CUSTOMER_NAME | sed 's/\s//g' -E)
-
+    
 }
 
 GET_PHONE () {
@@ -36,16 +38,19 @@ CHECK_CUSTOMER () {
     # Now we check if your database hold current customer. 
     # if it isn't here, created him
 
-    HAS_CUSTOMER = $(PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
+    HAS_CUSTOMER=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
 
     if [[ -z $HAS_CUSTOMER ]]
+
     then
         echo -e "\nI don't have a record for that phone number, what's your name?"
         read CUSTOMER_NAME
 
         INSERTED=$($PSQL "INSERT INTO customers (name, phone) VALUES ('$CUSTOMER_NAME', '$CUSTOMER_PHONE')")
     
-    if
+    else 
+        CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone='$CUSTOMER_PHONE'")
+    fi
 
     # also we need to format names to display it correctly
     FORMAT_NAMES
@@ -62,7 +67,7 @@ GET_TIME () {
 INSERT_DATA () {
 
     #get customer ID to insert valid data
-    CUSTOMER_ID = $(PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
+    CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
 
     #insert data to valid table
     INSERTED=$($PSQL "INSERT INTO appointments (customer_id, service_id, time) VALUES ($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')")
@@ -72,9 +77,6 @@ INSERT_DATA () {
 
 
 DISPLAY_SERVICES () {
-
-    # get services list to display it for customer
-    SERVICE_NAME = $(PSQL "SELECT name FROM services WHERE service_id=$SERVICE_ID_SELECTED")
 
     echo "$SERVICES" | while read SERVICE_ID BAR NAME
     do
@@ -123,6 +125,9 @@ LIST_DATA () {
         LIST_DATA "I could not find that service. What would you like today?"
 
     else 
+
+        # get services list to display it for customer
+        SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id=$SERVICE_ID_SELECTED")
 
         # check if service is valid
         HAS_SERVICE=$($PSQL "SELECT service_id FROM services WHERE service_id=$SERVICE_ID_SELECTED")
